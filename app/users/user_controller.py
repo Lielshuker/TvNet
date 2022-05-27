@@ -3,6 +3,7 @@ from passlib.hash import pbkdf2_sha256
 from sqlalchemy.exc import SQLAlchemyError
 
 from app import db
+# from app.errors import InvalidAPIUsage
 from app.users.UserModel import User
 
 
@@ -13,16 +14,16 @@ def create_user():
     username = request.json.get("username", None)
     password = request.json.get("password", None)
 
-    if not first_name:
-        return {"msg": "Wrong first_name"}, 401  # todo error
-    if not last_name:
-        return {"msg": "Wrong username"}, 401  # todo error
-    if not email:
-        return {"msg": "Wrong username"}, 401  # todo error
-    if not username:
-        return {"msg": "Wrong username"}, 401  # todo error
-    if not password:
-        return {"msg": "Wrong username"}, 401  # todo error
+    # if not first_name:
+    #     raise InvalidAPIUsage("No first name provided!")
+    # if not last_name:
+    #     raise InvalidAPIUsage("No last name provided!")
+    # if not email:
+    #     raise InvalidAPIUsage("No email provided!")
+    # if not username:
+    #     raise InvalidAPIUsage("No username provided!")
+    # if not password:
+    #     raise InvalidAPIUsage("No password provided!")
 
     user = User.query.filter(User.email == email).first()
     if user:
