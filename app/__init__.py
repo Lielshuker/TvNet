@@ -48,4 +48,7 @@ def setup_standard_api_gateway(app):
 
     from .users import users as users_blueprint
     app.register_blueprint(users_blueprint, url_prefix='/users')
+
+    from .movies import movies as movies_blueprint
+    app.register_blueprint(movies_blueprint, url_prefix='/movies')
     return app
