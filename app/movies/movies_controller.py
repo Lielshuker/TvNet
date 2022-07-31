@@ -7,6 +7,11 @@ from app.genres.genreModel import Genre
 from app.movies_genres.MoviesGenresModel import MoviesGenres
 from datetime import datetime
 
+from app.recommend_model.recommender_controller import get_recommendations
+from app.users.UserModel import User
+from app.watched_movies.watchMoviesModel import WatchedMovie
+
+
 def create_movie():
     name = request.json.get("name", None)
     length = request.json.get("length", None)
@@ -55,14 +60,29 @@ def create_movie():
         db.session.rollback()
     #return {'id': movie.id, "name": movie.name, "length": movie.length, "release_year": movie.release_year,
     #        "date_added": movie.date_added, "description": movie.description, "movie_url": movie.movie_url,
-    #        "image_url": movie.image_url}
+    #        "image_url": movie.image_url }
     return {'id': movie.id, "name": movie.name, "length": movie.length, "genre_id": movie.genre_id,
             "release_year": movie.release_year, "date_added": movie.date_added, "description": movie.description,
             "movie_url": movie.movie_url, "image_url": movie.image_url}
 
 
-def getMoviesList():
-    allMovies = db.session.query(Movie).all()
+def getMoviesList(username):
+    user = User.query.filter(User.username == username).first()
+    if not user:
+        return {"msg": "user not exist"}, 401  # todo error
+    watch_movie = WatchedMovie.query.filter(WatchedMovie.user_id == user.id).first()
+    if watch_movie:
+        allMovies = []
+        movies = get_recommendations(user_id=user.id)
+        for movie in movies:
+            # movie_db = Movie.query.filter(Movie.name == movie).first()
+            # allMovies.append(movie_db)
+            movie_db = movie['movie']
+            if movie_db:
+                allMovies.append(movie_db)
+
+    else:
+        allMovies = db.session.query(Movie).limit(10).all()
     for i in range(len(allMovies)):
         movie = allMovies[i].as_dict()
         movie['date_added'] = dateToString(movie['date_added'])
