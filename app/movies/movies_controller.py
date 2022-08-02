@@ -92,17 +92,24 @@ def getMoviesList(username):
         allMovies = db.session.query(Movie).paginate(page,per_page,error_out=False)
         total  = allMovies.total
         allMovies = allMovies.items
+    allMoviesAtDB = Movie.query.filter().all()
+
+    allMovies= parser(allMovies)
+    allMoviesAtDB= parser(allMoviesAtDB)
+
+
+    return temp(allMovies, total, allMoviesAtDB)
+
+
+def parser(allMovies):
     for i in range(len(allMovies)):
         movie = allMovies[i].as_dict()
         movie['date_added'] = dateToString(movie['date_added'])
         genres = getGenresList(movie['id'])
         movie['genre_id'] = genres
         allMovies[i] = movie
+    return allMovies
 
-    return temp(allMovies, total)
-    #allMoviesJson = json.dumps(allMovies, default=str)
-    moviesDict = movieListToDict(allMovies)
-    return moviesDict
 
 def getMovie(movie_id):
     movie = Movie.query.filter(Movie.id == movie_id).first()
@@ -124,10 +131,11 @@ def movieListToDict(movies):
         movieDict[key] = movies[i]
     return movieDict
 
-def temp(movies, total):
+def temp(movies, total, allMoviesAtDB):
     movieDict = {}
     movieDict['movies'] = movies
     movieDict['total'] = total
+    movieDict['allMovies'] = allMoviesAtDB
     return movieDict
 
 def getGenresList(movie_id):
