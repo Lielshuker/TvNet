@@ -8,10 +8,11 @@ class Config:
     TESTING = False
     MAIL_SUPPRESS_SEND = False
     MAIL_DEBUG = True
-
+    FRONT_END_URL = 'http://localhost:3000'
     SQLALCHEMY_DATABASE_URI = "mysql://root:1234@localhost:3306/TvNet"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = os.urandom(12)
+    # os.environ['FLASK_RUN_FROM_CLI'] = 'false'
 
 
 class ProdConfig(Config):

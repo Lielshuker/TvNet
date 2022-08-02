@@ -34,4 +34,10 @@ def setup_standard_api_gateway(app):
 
     from .movies import movies as movies_blueprint
     app.register_blueprint(movies_blueprint, url_prefix='/movies')
+
+    from .watched_movies import watched_movies as watched_movies_blueprint
+    app.register_blueprint(watched_movies_blueprint, url_prefix='/watched_movies')
+
+    from .recommend_model import recommender as recommender_blueprint
+    app.register_blueprint(recommender_blueprint, url_prefix='/recommender')
     return app

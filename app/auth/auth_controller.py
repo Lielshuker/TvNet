@@ -11,15 +11,6 @@ from app.users.UserModel import User
 from threading import Thread
 
 
-@jwt_required()
-def profile():
-    response_body = {
-        "name": "Nagato",
-        "about": "Hello! I'm a full stack developer that loves python and javascript"
-    }
-    return response_body
-
-
 def login():
     username = request.json.get("username", None)
     password = request.json.get("password", None)

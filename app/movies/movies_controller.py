@@ -7,6 +7,11 @@ from app.genres.genreModel import Genre
 from app.movies_genres.MoviesGenresModel import MoviesGenres
 from datetime import datetime
 
+from app.recommend_model.recommender_controller import get_recommendations
+from app.users.UserModel import User
+from app.watched_movies.watchMoviesModel import WatchedMovie
+
+
 def create_movie():
     name = request.json.get("name", None)
     length = request.json.get("length", None)
@@ -55,21 +60,44 @@ def create_movie():
         db.session.rollback()
     #return {'id': movie.id, "name": movie.name, "length": movie.length, "release_year": movie.release_year,
     #        "date_added": movie.date_added, "description": movie.description, "movie_url": movie.movie_url,
-    #        "image_url": movie.image_url}
+    #        "image_url": movie.image_url }
     return {'id': movie.id, "name": movie.name, "length": movie.length, "genre_id": movie.genre_id,
             "release_year": movie.release_year, "date_added": movie.date_added, "description": movie.description,
             "movie_url": movie.movie_url, "image_url": movie.image_url}
 
 
-def getMoviesList():
-    allMovies = db.session.query(Movie).all()
+def getMoviesList(username):
+
+    page = request.json.get("page", 0)
+    per_page = request.json.get("per_page", 10)
+    user = User.query.filter(User.username == username).first()
+    if not user:
+        return {"msg": "user not exist"}, 401  # todo error
+    watch_movie = WatchedMovie.query.filter(WatchedMovie.user_id == user.id).all()
+    if len(watch_movie) > 10:
+        allMovies = []
+        movies = get_recommendations(user_id=user.id)
+        total = 10
+        for movie in movies:
+            # movie_db = Movie.query.filter(Movie.name == movie).first()
+            # allMovies.append(movie_db)
+            movie_db = movie['movie']
+            if movie_db:
+                allMovies.append(movie_db)
+
+
+    else:
+        allMovies = db.session.query(Movie).paginate(page,per_page,error_out=False)
+        total  = allMovies.total
+        allMovies = allMovies.items
     for i in range(len(allMovies)):
         movie = allMovies[i].as_dict()
         movie['date_added'] = dateToString(movie['date_added'])
         genres = getGenresList(movie['id'])
         movie['genre_id'] = genres
         allMovies[i] = movie
-    return temp(allMovies)
+
+    return temp(allMovies, total)
     #allMoviesJson = json.dumps(allMovies, default=str)
     moviesDict = movieListToDict(allMovies)
     return moviesDict
@@ -94,9 +122,10 @@ def movieListToDict(movies):
         movieDict[key] = movies[i]
     return movieDict
 
-def temp(movies):
+def temp(movies, total):
     movieDict = {}
     movieDict['movies'] = movies
+    movieDict['total'] = total
     return movieDict
 
 def getGenresList(movie_id):

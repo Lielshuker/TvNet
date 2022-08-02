@@ -12,9 +12,10 @@ class Movie(db.Model):
     description = db.Column(db.Text)
     movie_url = db.Column(db.String(512))
     image_url = db.Column(db.String(512))
+    movielens_id = db.Column(db.Integer)
 
     def __int__(self, name, length, genre_id, release_year, date_added,
-                description, movie_url, image_url):
+                description, movie_url, image_url, movielens_id):
     #def __int__(self, name, length, release_year, date_added,
     #            description, movie_url, image_url):
         self.name = name
@@ -25,6 +26,7 @@ class Movie(db.Model):
         self.description = description
         self.movie_url = movie_url
         self.image_url = image_url
+        self.movielens_id = movielens_id
 
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
