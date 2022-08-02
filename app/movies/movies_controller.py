@@ -68,7 +68,7 @@ def create_movie():
 
 def getMoviesList(username):
 
-    page = request.json.get("page", 0)
+    page = request.json.get("page", 1)
     per_page = request.json.get("per_page", 10)
     user = User.query.filter(User.username == username).first()
     if not user:
@@ -77,14 +77,16 @@ def getMoviesList(username):
     if len(watch_movie) > 10:
         allMovies = []
         movies = get_recommendations(user_id=user.id)
-        total = 10
         for movie in movies:
             # movie_db = Movie.query.filter(Movie.name == movie).first()
             # allMovies.append(movie_db)
             movie_db = movie['movie']
-            if movie_db:
+            if movie_db and movie_db.movielens_id not in [k.movie_id for k in watch_movie]:
                 allMovies.append(movie_db)
-
+        total = len(allMovies)
+        if page > 0:
+            page -= 1
+        allMovies = allMovies[page * per_page: page * per_page + per_page]
 
     else:
         allMovies = db.session.query(Movie).paginate(page,per_page,error_out=False)

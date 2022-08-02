@@ -64,8 +64,8 @@ def get_recommendations(user_id):
     # recommended_movies = [{'movie':Movie.query.get(m), 'pred': p} for m, p in zip(result['recs'], result['preds'])]
     recommended_movies = []
     for m in result['recs']:
-        if (len(recommended_movies) == 10):
-            break
+        # if (len(recommended_movies) == 10):
+        #     break
         m = re.sub(' \(.*', '', m, flags=re.DOTALL)
         movie = Movie.query.filter(m == Movie.name).first()
         if movie:
