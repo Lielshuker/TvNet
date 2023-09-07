@@ -1,5 +1,5 @@
 # TvNet
-Web application for collaborative movie watching with chat and video.
+Web application for collaborative movie watching with chat and video. <br />
 This project is based on MVC architecture with a Backend written in Python and a Frontend written in React.
 the React code can be found at the following link:
 https://github.com/Lielshuker/Tv-Net-client.git
